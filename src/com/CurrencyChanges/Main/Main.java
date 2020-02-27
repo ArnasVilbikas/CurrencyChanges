@@ -3,6 +3,7 @@ package com.CurrencyChanges.Main;
 import com.CurrencyChanges.currencyInfo.currencyInfo;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.*;
 
@@ -10,8 +11,8 @@ import java.util.*;
 
 public class Main {
 
-    public final static String csv_file_period_start= "C:/temporaryFolder/currency_stream_period_START.csv";
-    public final static String csv_file_period_end= "C:/temporaryFolder/currency_stream_period_END.csv";
+    public final static String csv_file_period_start = "C:/temporaryFolder/currency_stream_period_START.csv";
+    public final static String csv_file_period_end = "C:/temporaryFolder/currency_stream_period_END.csv";
 
 
     public static ArrayList<currencyInfo> reader(String csv_file){
@@ -57,6 +58,7 @@ public class Main {
         ArrayList<currencyInfo> arrayListPeriodEnd = new ArrayList<currencyInfo>();
         String urlPeriodBegin;
         String urlPeriodEnd;
+        double changeFloat;
 
         Scanner obj = new Scanner(System.in);
 
@@ -69,14 +71,19 @@ public class Main {
         urlPeriodEnd = url + obj.nextLine();
         downloadFromURL(urlPeriodEnd, csv_file_period_end);
 
-        arrayListPeriodEnd = reader(csv_file_period_end);
-        for (currencyInfo str : arrayListPeriodEnd) {
-            System.out.println(str);
-        }
-
         arrayListPeriodStart = reader(csv_file_period_start);
-        for (currencyInfo str : arrayListPeriodStart) {
-            System.out.println(str);
+        arrayListPeriodEnd = reader(csv_file_period_end);
+
+
+        Iterator<currencyInfo> strEnd = arrayListPeriodEnd.iterator();
+        Iterator<currencyInfo> strStart = arrayListPeriodStart.iterator();
+        while(strStart.hasNext() && strEnd.hasNext()){
+
+            for (currencyInfo str : arrayListPeriodStart) {
+                changeFloat = strStart.next().getCurrencyProportion() / strEnd.next().getCurrencyProportion();
+                System.out.println(str.getCurrencyName() + " Currency Code = " + str.getCurrencyCode() + " Currency Change = " +  changeFloat);
+            }
+
         }
     }
 
@@ -94,9 +101,9 @@ public class Main {
         URL url = new URL(urlStr);
         BufferedInputStream bis = new BufferedInputStream(url.openStream());
         byte[] buffer = new byte[1024];
-        int count=0;
+        int count = 0;
 
-        if((count=bis.read(buffer,0,1024)) > 62){// > 62 in case the database is not updated on that specific day (meaning downloaded csv file only has headers and no actual currency data)
+        if((count = bis.read(buffer,0,1024)) > 62){// > 62 in case the database is not updated on that specific day (meaning downloaded csv file only has headers and no actual currency data)
             FileOutputStream fis = new FileOutputStream(file);
             fis.write(buffer,0,count);
             while((count = bis.read(buffer,0,1024)) != -1){ //-1 to decide that file has ended
@@ -159,7 +166,7 @@ public class Main {
             newStr = Integer.toString(temporalIntYear) + "-" + Integer.toString(temporalIntMonth) + "-" + Integer.toString(temporalIntDay);
         }
 
-        url=url.replace(oldStr,newStr);
+        url = url.replace(oldStr,newStr);
 
         downloadFromURL(url, file);
     }

@@ -49,6 +49,7 @@ public class currencyInfo {
         this.currencyDate = currencyDate;
     }
 
+
     @Override
     public String toString() {
         return "[ currencyName=" + currencyName + ", currencyCode=" + currencyCode + ", currencyProportion=" + currencyProportion + ", currencyDate=" + currencyDate +"]";
